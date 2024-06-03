@@ -1,0 +1,104 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/vaultUser?useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: IOCKo6BgqIzy0meE
+    initialization-mode: always
+    driver-class-name: com.mysql.jdbc.Driver
+  cloud:
+    gcp:
+      sql:
+        instance-connection-name: vault-249100:asia-east2:vault-sql-hk
+        database-name: vaultUser
+client:
+  baseUrl: https://billing-dot-vault-249100.df.r.appspot.com/
+  vaultUrl: https://app.xion.ai:8443
+  gstbaseUrl: https://gst-dot-vault-249100.df.r.appspot.com/
+  accountingUrl: https://app.xion.ai:8445
+  xionMailBaseURL: https://xion-mail.df.r.appspot.com
+vaultcredentials:
+  vaultUser: admin@xion.ai
+  vaultPassword: admin1
+rules:
+  subscribers:
+    concurrent:
+      rules: 1
+      error: 1
+  dqmruleid: 5784017542578176
+apflow:
+  projectID: vault-249100
+server:
+  port: 8156
+  compression:
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain,application/javascript,text/css
+  ssl:
+    enabled: true
+    key-alias: server
+    key-store: /home/alex_xion_ai/certs/xion.jks
+    key-store-password: GhtX44-0
+    key-store-type: JKS
+security:
+  firebase-props:
+    database-url: foo
+    enable-strict-server-session: true
+    enable-check-session-revoked: true
+    enable-logout-everywhere: false
+    session-expiry-in-days: 5
+  cookie-props:
+    max-age-in-minutes: 7200
+    http-only: true
+    secure: true
+    domain: xion.ai
+    path: /
+  allow-credentials: true
+  allowed-origins:
+    - https://widgets.xion.ai
+  allowed-methods:
+    - GET
+    - POST
+    - PUT
+    - PATCH
+    - DELETE
+    - OPTIONS
+  allowed-headers:
+    - Authorization
+    - Origin
+    - Content-Type
+    - Accept
+    - Accept-Encoding
+    - Accept-Language
+    - Access-Control-Allow-Origin
+    - Access-Control-Allow-Headers
+    - Access-Control-Request-Method
+    - X-Requested-With
+    - X-Auth-Token
+    - X-Xsrf-Token
+    - Cache-Control
+    - Id-Token
+  allowed-public-apis:
+    - /favicon.ico
+    - /session/login
+    - /public/**
+  exposed-headers:
+    - X-Xsrf-Token
+mailconfig:
+  spenmoemail: harman@xion.ai #testing@mycountomail.com
+  xionmailbaseurl: https://xion-mail.df.r.appspot.com
+  envemail: +success@mycountomail.com
+  enable: false
+spenmo:
+  reminder: true
+  email: testing@mycountomail.com
+  limit: 100
+  createbeneficiaryurl: https://api.spenmo-staging.com/api/v1/payouts/beneficiary
+  createpayouturl: https://api.spenmo-staging.com/api/v1/payouts/
+  getallbeneficiariesurl: https://api.spenmo-staging.com/api/v1/payouts/beneficiaries
+  getbeneficiaryurl: https://api.spenmo-staging.com/api/v1/payouts/beneficiary/
+  getallpayoutsurl: https://api.spenmo-staging.com/api/v1/payouts/
+  updatebeneficiaryurl: https://api.spenmo-staging.com/api/v1/payouts/beneficiary/
+  deletebeneficiaryurl: https://api.spenmo-staging.com/api/v1/payouts/beneficiary/delete/
+  getallpayoutmethodtypes: https://api.spenmo-staging.com/api/v1/enumeration/payoutMethodTypes
+  getallwalletbalanceurl: https://api.spenmo-staging.com/api/v1/payouts/balance
+wise:
+  clientId: xion
+  clientSecret: xionCounto

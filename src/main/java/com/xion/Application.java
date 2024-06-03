@@ -1,4 +1,4 @@
-package com.example.application;
+package com.xion;
 
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.theme.Theme;

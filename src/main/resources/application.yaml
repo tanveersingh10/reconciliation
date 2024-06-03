@@ -1,0 +1,42 @@
+spring:
+  profiles:
+    active: local
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2KB
+      max-file-size: 200MB
+      max-request-size: 215MB
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: update
+      naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+  mustache:
+    check-template-location: false
+security:
+  oauth2:
+    client:
+      clientId: 0oa119mjqmhhpR1dv357
+      clientSecret: XzRM4hQc2CR8gCgKOPX2E1mf2hAi9Xdh4NCpHNXi
+    resource:
+      tokenInfoUri: https://dev-754943.okta.com/oauth2/default/v1/introspect
+client:
+  oauth2:
+    client:
+      grantType: client_credentials
+      clientId: 0oa119mjqmhhpR1dv357
+      clientSecret: XzRM4hQc2CR8gCgKOPX2E1mf2hAi9Xdh4NCpHNXi
+      accessTokenUri: https://dev-754943.okta.com/oauth2/default/v1/token
+      scope: billing
+vaadin:
+  compatibilityMode: false
+  productionMode: true
+  closeIdleSessions: true
+  heartbeatInterval: 36000
+  servlet:
+    session:
+      timeout: 300

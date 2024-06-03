@@ -1,26 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <!-- Project from https://start.vaadin.com/project/fa019c9e-6e41-4153-9dde-4b508f2fd490 -->
-    <groupId>com.example.application</groupId>
-    <artifactId>flowcrmtutorial</artifactId>
-    <name>flowcrmtutorial</name>
+    <!-- Project from https://start.vaadin.com/project/d87941df-a160-4c0b-b50c-d400ed39f96d -->
+    <groupId>com.xion</groupId>
+    <artifactId>template</artifactId>
+    <name>template</name>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>
-        <java.version>21</java.version>
-        <vaadin.version>24.3.12</vaadin.version>
+        <java.version>11</java.version>
+        <vaadin.version>23.0.8</vaadin.version>
+        <counto.core.version>1.0.511-dev</counto.core.version>
+        <counto.wise.version>1.2</counto.wise.version>
     </properties>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.5</version>
+        <version>2.7.1</version>
     </parent>
 
     <repositories>
+        <repository>
+            <id>cloud-artifacts-wise</id>
+            <url>artifactregistry://asia-east2-maven.pkg.dev/vault-dev-270023/wise-sdk</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>cloud-artifacts-internal</id>
+            <url>artifactregistry://asia-southeast1-maven.pkg.dev/vault-dev-270023/xion-internal-dev</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>cloud-artifacts-owl</id>
+            <url>artifactregistry://asia-southeast1-maven.pkg.dev/vault-dev-270023/viral</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <!-- The order of definitions matters. Explicitly defining central here to make sure it has the highest priority. -->
+
+        <!-- Main Maven repository -->
+        <repository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>vaadin-prereleases</id>
+            <url>
+                https://maven.vaadin.com/vaadin-prereleases/
+            </url>
+        </repository>
+        <!-- Repository used by many Vaadin add-ons -->
         <repository>
             <id>Vaadin Directory</id>
             <url>https://maven.vaadin.com/vaadin-addons</url>
@@ -28,7 +77,28 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
+        <repository>
+            <id>vaadin-addons</id>
+            <url>https://maven.vaadin.com/vaadin-addons</url>
+        </repository>
     </repositories>
+
+    <pluginRepositories>
+        <!-- The order of definitions matters. Explicitly defining central here to make sure it has the highest priority. -->
+        <pluginRepository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+            <id>vaadin-prereleases</id>
+            <url>
+                https://maven.vaadin.com/vaadin-prereleases/
+            </url>
+        </pluginRepository>
+    </pluginRepositories>
 
     <dependencyManagement>
         <dependencies>
@@ -44,6 +114,62 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.google.api</groupId>
+            <artifactId>gax</artifactId>
+            <version>2.18.1</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.google.api/gax-grpc -->
+        <dependency>
+            <groupId>com.google.api</groupId>
+            <artifactId>gax-grpc</artifactId>
+            <version>2.18.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-gcp-starter-sql-mysql</artifactId>
+            <version>1.2.4.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.48</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox-tools</artifactId>
+            <version>2.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>itextpdf</artifactId>
+            <version>5.5.10</version>
+        </dependency>
+        <dependency>
+            <groupId>com.itextpdf.tool</groupId>
+            <artifactId>xmlworker</artifactId>
+            <version>5.5.10</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>2.2.11</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-core</artifactId>
+            <version>2.2.11</version>
+        </dependency>
+        <dependency>
+            <groupId>com.xion</groupId>
+            <artifactId>viral</artifactId>
+            <version>${counto.core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.xion</groupId>
+            <artifactId>wise-sdk</artifactId>
+            <version>${counto.wise.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.vaadin</groupId>
             <!-- Replace artifactId with vaadin-core to use only free components -->
             <artifactId>vaadin</artifactId>
@@ -52,23 +178,6 @@
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-spring-boot-starter</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.parttio</groupId>
-            <artifactId>line-awesome</artifactId>
-            <version>2.0.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
@@ -80,13 +189,76 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.firebase</groupId>
+            <artifactId>firebase-admin</artifactId>
+            <version>8.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security.oauth</groupId>
+            <artifactId>spring-security-oauth2</artifactId>
+            <version>2.5.1.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.vaadin</groupId>
-            <artifactId>vaadin-testbench-junit5</artifactId>
+            <artifactId>vaadin-testbench</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-charts-flow</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>exampledata</artifactId>
+            <version>4.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.vaadin.olli</groupId>
+            <artifactId>file-download-wrapper</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+        <!-- Include JUnit 4 support for TestBench and others -->
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.hamcrest</groupId>
+                    <artifactId>hamcrest-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>io.github.bonigarcia</groupId>
+            <artifactId>webdrivermanager</artifactId>
+            <version>5.0.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.vaadin.bootstrapcss</groupId>
+            <artifactId>bootstrap-for-vaadin</artifactId>
+            <version>1.0.0</version>
         </dependency>
     </dependencies>
 
@@ -96,8 +268,19 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <!-- Clean build and startup time for Vaadin apps sometimes may exceed
+                     the default Spring Boot's 30sec timeout.  -->
+                <configuration>
+                    <wait>500</wait>
+                    <maxAttempts>240</maxAttempts>
+                </configuration>
             </plugin>
 
+            <!--
+                Take care of synchronizing java dependencies and imports in
+                package.json and main.js files.
+                It also creates webpack.config.js if not exists yet.
+            -->
             <plugin>
                 <groupId>com.vaadin</groupId>
                 <artifactId>vaadin-maven-plugin</artifactId>
@@ -111,25 +294,19 @@
                 </executions>
             </plugin>
         </plugins>
+        <extensions>
+            <extension>
+                <groupId>com.google.cloud.artifactregistry</groupId>
+                <artifactId>artifactregistry-maven-wagon</artifactId>
+                <version>2.1.4</version>
+            </extension>
+        </extensions>
     </build>
 
     <profiles>
         <profile>
             <!-- Production mode is activated using -Pproduction -->
             <id>production</id>
-            <dependencies>
-                <!-- Exclude development dependencies from production -->
-                <dependency>
-                    <groupId>com.vaadin</groupId>
-                    <artifactId>vaadin-core</artifactId>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>com.vaadin</groupId>
-                            <artifactId>vaadin-dev</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-            </dependencies>
             <build>
                 <plugins>
                     <plugin>
@@ -144,6 +321,9 @@
                                 <phase>compile</phase>
                             </execution>
                         </executions>
+                        <configuration>
+                            <productionMode>true</productionMode>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
@@ -197,3 +377,288 @@
 
     </profiles>
 </project>
+
+
+        <!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!--<project xmlns="http://maven.apache.org/POM/4.0.0"-->
+<!--    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">-->
+<!--    <modelVersion>4.0.0</modelVersion>-->
+<!--    &lt;!&ndash; Project from https://start.vaadin.com/project/fa019c9e-6e41-4153-9dde-4b508f2fd490 &ndash;&gt;-->
+<!--    <groupId>com.example.application</groupId>-->
+<!--    <artifactId>flowcrmtutorial</artifactId>-->
+<!--    <name>flowcrmtutorial</name>-->
+<!--    <version>1.0-SNAPSHOT</version>-->
+<!--    <packaging>jar</packaging>-->
+
+<!--    <properties>-->
+<!--        <java.version>21</java.version>-->
+<!--        <vaadin.version>24.3.12</vaadin.version>-->
+<!--        <counto.core.version>1.0.511-dev</counto.core.version>-->
+<!--        <counto.wise.version>1.2</counto.wise.version>-->
+<!--    </properties>-->
+
+<!--    <parent>-->
+<!--        <groupId>org.springframework.boot</groupId>-->
+<!--        <artifactId>spring-boot-starter-parent</artifactId>-->
+<!--        <version>3.2.5</version>-->
+<!--    </parent>-->
+
+<!--    <repositories>-->
+<!--        <repository>-->
+<!--            <id>cloud-artifacts-wise</id>-->
+<!--            <url>artifactregistry://asia-east2-maven.pkg.dev/vault-dev-270023/wise-sdk</url>-->
+<!--            <releases>-->
+<!--                <enabled>true</enabled>-->
+<!--            </releases>-->
+<!--            <snapshots>-->
+<!--                <enabled>true</enabled>-->
+<!--            </snapshots>-->
+<!--        </repository>-->
+<!--        <repository>-->
+<!--            <id>cloud-artifacts-internal</id>-->
+<!--            <url>artifactregistry://asia-southeast1-maven.pkg.dev/vault-dev-270023/xion-internal-dev</url>-->
+<!--            <releases>-->
+<!--                <enabled>true</enabled>-->
+<!--            </releases>-->
+<!--            <snapshots>-->
+<!--                <enabled>true</enabled>-->
+<!--            </snapshots>-->
+<!--        </repository>-->
+<!--        <repository>-->
+<!--            <id>cloud-artifacts-owl</id>-->
+<!--            <url>artifactregistry://asia-southeast1-maven.pkg.dev/vault-dev-270023/viral</url>-->
+<!--            <releases>-->
+<!--                <enabled>true</enabled>-->
+<!--            </releases>-->
+<!--            <snapshots>-->
+<!--                <enabled>true</enabled>-->
+<!--            </snapshots>-->
+<!--        </repository>-->
+<!--        &lt;!&ndash; The order of definitions matters. Explicitly defining central here to make sure it has the highest priority. &ndash;&gt;-->
+
+<!--        &lt;!&ndash; Main Maven repository &ndash;&gt;-->
+<!--        <repository>-->
+<!--            <id>central</id>-->
+<!--            <url>https://repo.maven.apache.org/maven2</url>-->
+<!--            <snapshots>-->
+<!--                <enabled>false</enabled>-->
+<!--            </snapshots>-->
+<!--        </repository>-->
+<!--        <repository>-->
+<!--            <id>vaadin-prereleases</id>-->
+<!--            <url>-->
+<!--                https://maven.vaadin.com/vaadin-prereleases/-->
+<!--            </url>-->
+<!--        </repository>-->
+<!--        &lt;!&ndash; Repository used by many Vaadin add-ons &ndash;&gt;-->
+<!--        <repository>-->
+<!--            <id>Vaadin Directory</id>-->
+<!--            <url>https://maven.vaadin.com/vaadin-addons</url>-->
+<!--            <snapshots>-->
+<!--                <enabled>false</enabled>-->
+<!--            </snapshots>-->
+<!--        </repository>-->
+<!--        <repository>-->
+<!--            <id>vaadin-addons</id>-->
+<!--            <url>https://maven.vaadin.com/vaadin-addons</url>-->
+<!--        </repository>-->
+<!--    </repositories>-->
+
+<!--    <pluginRepositories>-->
+<!--        &lt;!&ndash; The order of definitions matters. Explicitly defining central here to make sure it has the highest priority. &ndash;&gt;-->
+<!--        <pluginRepository>-->
+<!--            <id>central</id>-->
+<!--            <url>https://repo.maven.apache.org/maven2</url>-->
+<!--            <snapshots>-->
+<!--                <enabled>false</enabled>-->
+<!--            </snapshots>-->
+<!--        </pluginRepository>-->
+<!--        <pluginRepository>-->
+<!--            <id>vaadin-prereleases</id>-->
+<!--            <url>-->
+<!--                https://maven.vaadin.com/vaadin-prereleases/-->
+<!--            </url>-->
+<!--        </pluginRepository>-->
+<!--    </pluginRepositories>-->
+
+<!--    <dependencyManagement>-->
+<!--        <dependencies>-->
+<!--            <dependency>-->
+<!--                <groupId>com.vaadin</groupId>-->
+<!--                <artifactId>vaadin-bom</artifactId>-->
+<!--                <version>${vaadin.version}</version>-->
+<!--                <type>pom</type>-->
+<!--                <scope>import</scope>-->
+<!--            </dependency>-->
+<!--        </dependencies>-->
+<!--    </dependencyManagement>-->
+
+<!--    <dependencies>-->
+<!--        <dependency>-->
+<!--            <groupId>com.vaadin</groupId>-->
+<!--            &lt;!&ndash; Replace artifactId with vaadin-core to use only free components &ndash;&gt;-->
+<!--            <artifactId>vaadin</artifactId>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>com.vaadin</groupId>-->
+<!--            <artifactId>vaadin-spring-boot-starter</artifactId>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.parttio</groupId>-->
+<!--            <artifactId>line-awesome</artifactId>-->
+<!--            <version>2.0.0</version>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>com.h2database</groupId>-->
+<!--            <artifactId>h2</artifactId>-->
+<!--            <scope>runtime</scope>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter-data-jpa</artifactId>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter-validation</artifactId>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-devtools</artifactId>-->
+<!--            <optional>true</optional>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter-test</artifactId>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>com.vaadin</groupId>-->
+<!--            <artifactId>vaadin-testbench-junit5</artifactId>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>com.xion</groupId>-->
+<!--            <artifactId>viral</artifactId>-->
+<!--            <version>${counto.core.version}</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>com.xion</groupId>-->
+<!--            <artifactId>wise-sdk</artifactId>-->
+<!--            <version>${counto.wise.version}</version>-->
+<!--        </dependency>-->
+
+
+<!--    </dependencies>-->
+
+<!--    <build>-->
+<!--        <defaultGoal>spring-boot:run</defaultGoal>-->
+<!--        <plugins>-->
+<!--            <plugin>-->
+<!--                <groupId>org.springframework.boot</groupId>-->
+<!--                <artifactId>spring-boot-maven-plugin</artifactId>-->
+<!--            </plugin>-->
+
+<!--            <plugin>-->
+<!--                <groupId>com.vaadin</groupId>-->
+<!--                <artifactId>vaadin-maven-plugin</artifactId>-->
+<!--                <version>${vaadin.version}</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <goals>-->
+<!--                            <goal>prepare-frontend</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
+<!--        </plugins>-->
+<!--    </build>-->
+
+<!--    <profiles>-->
+<!--        <profile>-->
+<!--            &lt;!&ndash; Production mode is activated using -Pproduction &ndash;&gt;-->
+<!--            <id>production</id>-->
+<!--            <dependencies>-->
+<!--                &lt;!&ndash; Exclude development dependencies from production &ndash;&gt;-->
+<!--                <dependency>-->
+<!--                    <groupId>com.vaadin</groupId>-->
+<!--                    <artifactId>vaadin-core</artifactId>-->
+<!--                    <exclusions>-->
+<!--                        <exclusion>-->
+<!--                            <groupId>com.vaadin</groupId>-->
+<!--                            <artifactId>vaadin-dev</artifactId>-->
+<!--                        </exclusion>-->
+<!--                    </exclusions>-->
+<!--                </dependency>-->
+<!--            </dependencies>-->
+<!--            <build>-->
+<!--                <plugins>-->
+<!--                    <plugin>-->
+<!--                        <groupId>com.vaadin</groupId>-->
+<!--                        <artifactId>vaadin-maven-plugin</artifactId>-->
+<!--                        <version>${vaadin.version}</version>-->
+<!--                        <executions>-->
+<!--                            <execution>-->
+<!--                                <goals>-->
+<!--                                    <goal>build-frontend</goal>-->
+<!--                                </goals>-->
+<!--                                <phase>compile</phase>-->
+<!--                            </execution>-->
+<!--                        </executions>-->
+<!--                    </plugin>-->
+<!--                </plugins>-->
+<!--            </build>-->
+<!--        </profile>-->
+
+<!--        <profile>-->
+<!--            <id>it</id>-->
+<!--            <build>-->
+<!--                <plugins>-->
+<!--                    <plugin>-->
+<!--                        <groupId>org.springframework.boot</groupId>-->
+<!--                        <artifactId>spring-boot-maven-plugin</artifactId>-->
+<!--                        <executions>-->
+<!--                            <execution>-->
+<!--                                <id>start-spring-boot</id>-->
+<!--                                <phase>pre-integration-test</phase>-->
+<!--                                <goals>-->
+<!--                                    <goal>start</goal>-->
+<!--                                </goals>-->
+<!--                            </execution>-->
+<!--                            <execution>-->
+<!--                                <id>stop-spring-boot</id>-->
+<!--                                <phase>post-integration-test</phase>-->
+<!--                                <goals>-->
+<!--                                    <goal>stop</goal>-->
+<!--                                </goals>-->
+<!--                            </execution>-->
+<!--                        </executions>-->
+<!--                    </plugin>-->
+
+<!--                    &lt;!&ndash; Runs the integration tests (*IT) after the server is started &ndash;&gt;-->
+<!--                    <plugin>-->
+<!--                        <groupId>org.apache.maven.plugins</groupId>-->
+<!--                        <artifactId>maven-failsafe-plugin</artifactId>-->
+<!--                        <executions>-->
+<!--                            <execution>-->
+<!--                                <goals>-->
+<!--                                    <goal>integration-test</goal>-->
+<!--                                    <goal>verify</goal>-->
+<!--                                </goals>-->
+<!--                            </execution>-->
+<!--                        </executions>-->
+<!--                        <configuration>-->
+<!--                            <trimStackTrace>false</trimStackTrace>-->
+<!--                            <enableAssertions>true</enableAssertions>-->
+<!--                        </configuration>-->
+<!--                    </plugin>-->
+<!--                </plugins>-->
+<!--            </build>-->
+<!--        </profile>-->
+
+<!--    </profiles>-->
+<!--</project>-->
+
