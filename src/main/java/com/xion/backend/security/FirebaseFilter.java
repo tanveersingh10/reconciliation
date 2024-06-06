@@ -52,7 +52,7 @@ public class FirebaseFilter extends OncePerRequestFilter {
 		boolean authenticated;
 		if (activeProfile.equals("local")){
 			authenticated = true;
-			UserPrincipal user = (UserPrincipal) userDetailsService.loadUserByUsername("sabatest2@xion.ai");
+			UserPrincipal user = (UserPrincipal) userDetailsService.loadUserByUsername("alex@counto.in");
 			UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user,
 					new Credentials(Credentials.CredentialType.SESSION, null, null, null), null);
 			authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
