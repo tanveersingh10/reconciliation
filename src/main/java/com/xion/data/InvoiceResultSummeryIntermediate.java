@@ -3,7 +3,9 @@ package com.xion.data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.xion.resultObjectModel.resultSummeries.DocumentType;
 import com.xion.util.Status;
+import com.xion.util.StringListConverter;
 
+import javax.persistence.Convert;
 import javax.print.Doc;
 import java.util.Date;
 import java.util.List;
@@ -38,8 +40,54 @@ public class InvoiceResultSummeryIntermediate {
     private Double totalAmount;
     private String currency;
 
+    private List<Long> paymentIds;
+    private List<String> externalPaymentIds;
+    private List<String> externalMatchIds;
+    private List<String> externalLink;
+    private List<Long> bankReconciliationIds;
+
     @JsonFormat(pattern = "MM-dd-yyyy")
     private Date date;
+
+    public List<Long> getPaymentIds() {
+        return paymentIds;
+    }
+
+    public void setPaymentIds(List<Long> paymentIds) {
+        this.paymentIds = paymentIds;
+    }
+
+    public List<String> getExternalPaymentIds() {
+        return externalPaymentIds;
+    }
+
+    public void setExternalPaymentIds(List<String> externalPaymentIds) {
+        this.externalPaymentIds = externalPaymentIds;
+    }
+
+    public List<String> getExternalMatchIds() {
+        return externalMatchIds;
+    }
+
+    public void setExternalMatchIds(List<String> externalMatchIds) {
+        this.externalMatchIds = externalMatchIds;
+    }
+
+    public List<String> getExternalLink() {
+        return externalLink;
+    }
+
+    public void setExternalLink(List<String> externalLink) {
+        this.externalLink = externalLink;
+    }
+
+    public List<Long> getBankReconciliationIds() {
+        return bankReconciliationIds;
+    }
+
+    public void setBankReconciliationIds(List<Long> bankReconciliationIds) {
+        this.bankReconciliationIds = bankReconciliationIds;
+    }
 
     public DocumentType getType() {
         return type;
