@@ -10,9 +10,10 @@ import com.xion.resultObjectModel.resultSummeries.bank.BankStatementLineStatus;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 
-public class BankStatementLineDeserializer extends StdDeserializer<BankStatementLine> {
+public class BankStatementLineDeserializer extends StdDeserializer<BankStatementLineIntermediate> {
 
     public BankStatementLineDeserializer() {
         this(null);
@@ -23,11 +24,11 @@ public class BankStatementLineDeserializer extends StdDeserializer<BankStatement
     }
 
     @Override
-    public BankStatementLine deserialize(JsonParser jp, DeserializationContext ctxt)
+    public BankStatementLineIntermediate deserialize(JsonParser jp, DeserializationContext ctxt)
             throws IOException, JsonProcessingException {
         JsonNode node = jp.getCodec().readTree(jp);
 
-        BankStatementLine line = new BankStatementLine();
+        BankStatementLineIntermediate line = new BankStatementLineIntermediate();
 
         if (node.hasNonNull("id")) {
             line.setId(node.get("id").asLong());
@@ -42,7 +43,7 @@ public class BankStatementLineDeserializer extends StdDeserializer<BankStatement
         }
 
         if (node.hasNonNull("MatchID")) {
-            line.setOriginalLineID(node.get("MatchID").asText());
+            line.setMatchID(node.get("MatchID").asText());
         }
 
         if (node.hasNonNull("statementInternalID")) {
@@ -74,21 +75,19 @@ public class BankStatementLineDeserializer extends StdDeserializer<BankStatement
         }
 
         if (node.hasNonNull("Account")) {
-            line.setDetail1(node.get("Account").asText());
             line.setAccount(node.get("Account").asText());
-            line.setAccountDescription(Collections.singletonList(node.get("Account").asText()));
         }
 
         if (node.hasNonNull("Description")) {
-            line.setDetail2(node.get("Description").asText());
+            line.setDescription(node.get("Description").asText());
         }
 
         if (node.hasNonNull("Comments")) {
-            line.setDetail3(node.get("Comments").asText());
+            line.setComments(node.get("Comments").asText());
         }
 
         if (node.hasNonNull("Customer Comment")) {
-            line.setClientComments(node.get("Customer Comment").asText());
+            line.setCustomerComment(node.get("Customer Comment").asText());
         }
 
         if (node.hasNonNull("xiboComments")) {
@@ -118,6 +117,20 @@ public class BankStatementLineDeserializer extends StdDeserializer<BankStatement
 
         if (node.hasNonNull("split")) {
             line.setSplit(node.get("split").asBoolean());
+        }
+
+        if (node.hasNonNull("documentReconcilationIds")) {
+            JsonNode idsNode = node.get("documentReconcilationIds");
+            if (idsNode.isArray()) {
+                ArrayList<Long> documentReconcilationIds = new ArrayList<>();
+                for (JsonNode idNode : idsNode) {
+                    documentReconcilationIds.add(idNode.asLong());
+                }
+                line.setAccountID(documentReconcilationIds);
+            }
+        } else {
+            ArrayList<Long> documentReconcilationIds = new ArrayList<>();
+            line.setAccountID(documentReconcilationIds);
         }
 
         return line;

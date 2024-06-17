@@ -1,5 +1,11 @@
 package com.xion.data;
 
+import com.xion.resultObjectModel.resultSummeries.bank.BankStatementLine;
+import com.xion.resultObjectModel.resultSummeries.bank.BankStatementLineStatus;
+import com.xion.util.Status;
+
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class BankStatementLineIntermediate {
@@ -10,13 +16,13 @@ public class BankStatementLineIntermediate {
     private double credit;
     private String currency;
     private String customerComment;
-    private String date;
+    private Date date;
     private double debit;
     private String description;
     private String fileURL;
     private String matchID;
     private String name;
-    private String status;
+    private BankStatementLineStatus status;
     private String txnType;
     private Long id;
     private Integer lineNumber;
@@ -24,7 +30,17 @@ public class BankStatementLineIntermediate {
     private Boolean saved;
     private Boolean split;
     private String statementInternalID;
-    private String accountID;
+    private List<Long> accountID;
+    private Boolean xiboComments;
+    // List<Long> documentReconcilationIds;
+
+//    public List<Long> getDocumentReconcilationIds() {
+//        return documentReconcilationIds;
+//    }
+
+//    public void setDocumentReconcilationIds(List<Long> documentReconcilationIds) {
+//        this.documentReconcilationIds = documentReconcilationIds;
+//    }
 
     public String getAccount() {
         return account;
@@ -82,11 +98,11 @@ public class BankStatementLineIntermediate {
         this.customerComment = customerComment;
     }
 
-    public String getDate() {
+    public Date getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(Date date) {
         this.date = date;
     }
 
@@ -130,11 +146,11 @@ public class BankStatementLineIntermediate {
         this.name = name;
     }
 
-    public String getStatus() {
+    public BankStatementLineStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(BankStatementLineStatus status) {
         this.status = status;
     }
 
@@ -194,11 +210,17 @@ public class BankStatementLineIntermediate {
         this.statementInternalID = statementInternalID;
     }
 
-    public String getAccountID() {
+    public List<Long> getAccountID() {
         return accountID;
     }
 
     public void setAccountID(String accountID) {
+        if (accountID == null || accountID.isEmpty()) {
+            this.accountID = new ArrayList<>();
+        }
+    }
+
+    public void setAccountID(List<Long> accountID) {
         this.accountID = accountID;
     }
 
@@ -210,6 +232,6 @@ public class BankStatementLineIntermediate {
         this.xiboComments = xiboComments;
     }
 
-    private Boolean xiboComments;
+
 
 }
