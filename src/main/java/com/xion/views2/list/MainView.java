@@ -41,6 +41,7 @@ import java.util.stream.Collectors;
 @Route(value = "")
 @RouteAlias(value = "")
 @StyleSheet("https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css")
+@CssImport("./styles/styles.css")
 public class MainView extends VerticalLayout {
     private final Grid<InvoiceResultSummeryIntermediate> invoiceGrid;
     private final Grid<BankStatementLineIntermediate> bankGrid;
@@ -127,8 +128,12 @@ public class MainView extends VerticalLayout {
             this.bankGrid.setItems(bankData);
         }
 
-        Page page = UI.getCurrent().getPage();
-        page.executeJs("updateListeners()");
+        UI ui = UI.getCurrent();
+        ui.access(() -> {
+            //function defined in bankGrid.js
+            ui.getPage().executeJs("setTimeout(function() { updateListeners(); }, 100);");
+            ui.getPage().executeJs("setTimeout(function() { updateStyles(); }, 100);");
+        });
 
 
 //        page.executeJs(
@@ -274,7 +279,8 @@ public class MainView extends VerticalLayout {
         filter.setValueChangeMode(ValueChangeMode.LAZY);
         filter.addValueChangeListener(e -> applyFilters());
 
-        HorizontalLayout searchFields = new HorizontalLayout(filter);
+        HorizontalLayout searchField = new HorizontalLayout(filter);
+        searchField.setDefaultVerticalComponentAlignment(Alignment.BASELINE);
 
         Button unreconciledButton = new Button("Unreconciled Statements", event -> {
             unreconciledBankData = bankData.stream()
@@ -327,34 +333,27 @@ public class MainView extends VerticalLayout {
             return reconciledSpan;
         })).setHeader("Reconciled");
 
-//        bankGrid.setRowStyleGenerator(bankStatement -> {
-//            boolean reconciled = isBankStatementReconciled(bankStatement);
-//            if (reconciled) {
-//                return "reconciled-row"; // CSS class for reconciled rows
-//            } else {
-//                return "unreconciled-row"; // CSS class for unreconciled rows
-//            }
-//        });
-//        bankGrid.setClassNameGenerator(bankStatement -> {
-//            boolean reconciled = isBankStatementReconciled(bankStatement);
-//                if (reconciled) {
-//                    return "reconciled-row"; // CSS class for reconciled rows
-//                } else {
-//                    return "unreconciled-row"; // CSS class for unreconciled rows
-//                }
-//        });
 
         bankGrid.setClassNameGenerator(bankStatement -> {
             boolean reconciled = isBankStatementReconciled(bankStatement);
-            return reconciled ? "table-success" : "table-danger";
+                if (reconciled) {
+                    return "reconciled-row"; // CSS class for reconciled rows
+                } else {
+                    return "unreconciled-row"; // CSS class for unreconciled rows
+                }
         });
+
+//        bankGrid.setClassNameGenerator(bankStatement -> {
+//            boolean reconciled = isBankStatementReconciled(bankStatement);
+//            return reconciled ? "table-success" : "table-danger";
+//        });
 
 //        bankGrid.setClassName("table-danger");
 
         HorizontalLayout datePickersLayout = new HorizontalLayout(startDatePickerBank, endDatePickerBank, filterButton);
         datePickersLayout.setDefaultVerticalComponentAlignment(Alignment.BASELINE);
         H2 bankTitle = new H2("Bank Statements");
-        FlexLayout bankLayout = new FlexLayout(bankTitle, datePickersLayout, searchFields, filterButtons, totalAmountSpan, bankGridDiv);
+        FlexLayout bankLayout = new FlexLayout(bankTitle, datePickersLayout, searchField, filterButtons, totalAmountSpan, bankGridDiv);
         bankLayout.setFlexDirection(FlexLayout.FlexDirection.COLUMN);
         bankLayout.setWidth("45%");
 

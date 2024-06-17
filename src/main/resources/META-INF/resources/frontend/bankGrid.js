@@ -72,3 +72,18 @@ window.updateListeners = function updateListeners() {
     handleCheckboxClick();
 //    observeGridChanges();
 }
+
+window.updateStyles = function updateStyles() {
+    const gridCells = document.querySelectorAll('#bankGridDiv #bankGrid vaadin-grid-cell-content');
+
+    gridCells.forEach(cell => {
+        const parent = cell.parentElement;
+        if (parent.classList.contains('reconciled')) {
+            parent.style.backgroundColor = '#d4edda'; // table-success
+            parent.style.color = '#155724';
+        } else if (parent.classList.contains('unreconciled')) {
+            parent.style.backgroundColor = '#f8d7da'; // table-danger
+            parent.style.color = '#721c24';
+        }
+    });
+};
