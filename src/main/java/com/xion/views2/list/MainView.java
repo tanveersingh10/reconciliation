@@ -112,11 +112,6 @@ public class MainView extends VerticalLayout {
 
 
 
-
-
-
-
-
         setSizeFull();
         setJustifyContentMode(JustifyContentMode.CENTER);
         setDefaultHorizontalComponentAlignment(Alignment.CENTER);
@@ -133,48 +128,53 @@ public class MainView extends VerticalLayout {
         }
 
         Page page = UI.getCurrent().getPage();
+        page.executeJs("updateListeners()");
 
 
-        page.executeJs(
-                "console.log('inline');" +
-                        "const totalAmountSpan = document.querySelector('#totalAmountSpan');" +
-                        "console.log('totalAmountSpan:', totalAmountSpan);" +
-                        "let totalAmount = 0;" +
-                        "console.log('Initial totalAmount:', totalAmount);" +
-                        "const checkboxes = document.querySelectorAll('#bankGridDiv vaadin-checkbox');" +
-                        "console.log('checkboxes:', checkboxes);" +
-                        "checkboxes.forEach((checkbox, index) => {" +
-                        "   console.log('Adding event listener to checkbox ' + index + ':', checkbox);" +
-                        "   checkbox.addEventListener('click', (event) => {" +
-                        "       console.log('Click event triggered for checkbox', index);" +
-                        "       const grid = document.querySelector('#bankGridDiv #bankGrid');" +
-                        "       console.log('Grid:', grid);" +
-                        "       if (grid) {" +
-                        "           const activeRowGroup = grid._activeRowGroup;" +
-                        "           console.log('activeRowGroup:', activeRowGroup);" +
-                        "           if (activeRowGroup) {" +
-//                        "               const key = parseInt(event.currentTarget.__item.key);" +
-                                        "const key = index;" +
-                        "               console.log('key:', key);" +
-                        "               const x = 27 + ((key - 1) * 6);" +
-                        "               console.log('x:', x);" +
-                        "               const amountCell = activeRowGroup.childNodes[key].children['vaadin-grid-cell-' + x]._content.firstChild.firstChild.textContent;" +
-                        "               console.log('amountCell:', amountCell);" +
-                        "               const amount = parseFloat(amountCell) || 0;" +  // Default to 0 if parseFloat fails
-                        "               console.log('Parsed amount:', amount);" +
-                        "               totalAmount += amount;" +
-                        "               console.log('Updated totalAmount:', totalAmount);" +
-                        "               totalAmountSpan.textContent = 'Total Amount: ' + totalAmount;" +
-                        "               console.log('Updated totalAmountSpan:', totalAmountSpan.textContent);" +
-                        "           } else {" +
-                        "               console.log('activeRowGroup not found');" +
-                        "           }" +
-                        "       } else {" +
-                        "           console.log('Grid not found');" +
-                        "       }" +
-                        "   });" +
-                        "});"
-        );
+//        page.executeJs(
+//                "console.log('inline');" +
+//                        "const totalAmountSpan = document.querySelector('#totalAmountSpan');" +
+//                        "console.log('totalAmountSpan:', totalAmountSpan);" +
+//                        "let totalAmount = 0;" +
+//                        "console.log('Initial totalAmount:', totalAmount);" +
+//                        "const checkboxes = document.querySelectorAll('#bankGridDiv vaadin-checkbox');" +
+//                        "console.log('checkboxes:', checkboxes);" +
+//                        "checkboxes.forEach((checkbox, index) => {" +
+//                        "   console.log('Adding event listener to checkbox ' + index + ':', checkbox);" +
+//                        "   checkbox.addEventListener('click', (event) => {" +
+//                        "       console.log('Click event triggered for checkbox', index);" +
+//                        "       const grid = document.querySelector('#bankGridDiv #bankGrid');" +
+//                        "       console.log('Grid:', grid);" +
+//                        "       if (grid) {" +
+//                        "           const activeRowGroup = grid._activeRowGroup;" +
+//                        "           console.log('activeRowGroup:', activeRowGroup);" +
+//                        "           if (activeRowGroup) {" +
+////                        "               const key = parseInt(event.currentTarget.__item.key);" +
+//                        "           const key = index - 1;" +
+//                        "               console.log('key:', key);" +
+//                        "               const x = 27 + ((key - 1) * 6);" +
+//                        "               console.log('x:', x);" +
+//                        "               const amountCell = activeRowGroup.childNodes[key].children['vaadin-grid-cell-' + x]._content.firstChild.firstChild.textContent;" +
+//                        "               console.log('amountCell:', amountCell);" +
+//                        "               const amount = parseFloat(amountCell) || 0;" +  // Default to 0 if parseFloat fails
+//                        "               console.log('Parsed amount:', amount);" +
+//                                        "if (checkbox.checked) {" +
+//                        "                   totalAmount += amount;" +
+//                        "                } else {" +
+//                        "                   totalAmount -= amount;" +
+//                        "                }" +
+//                        "               console.log('Updated totalAmount:', totalAmount);" +
+//                        "               totalAmountSpan.textContent = 'Total Amount: ' + totalAmount.toFixed(2);" +
+//                        "               console.log('Updated totalAmountSpan:', totalAmountSpan.textContent);" +
+//                        "           } else {" +
+//                        "               console.log('activeRowGroup not found');" +
+//                        "           }" +
+//                        "       } else {" +
+//                        "           console.log('Grid not found');" +
+//                        "       }" +
+//                        "   });" +
+//                        "});"
+//            );
 
     }
 
