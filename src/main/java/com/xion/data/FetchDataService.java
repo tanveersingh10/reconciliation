@@ -136,16 +136,11 @@ public class FetchDataService {
         JsonNode rootNode = objectMapper.readTree(jsonString);
         JsonNode dataNode = rootNode.path("payload").path("data");
         ArrayList<InvoiceResultSummeryIntermediate> invoices = new ArrayList<>();
-        int flag = 0;
 
         if (dataNode.isArray()) {
             for (JsonNode node : dataNode) {
 
                 JsonNode resultSummeryNode = node.path("resultSummery");
-                if (flag == 0) {
-                    System.out.println(resultSummeryNode);
-                    flag = 1;
-                }
                 InvoiceResultSummeryIntermediate dto = objectMapper.treeToValue(resultSummeryNode, InvoiceResultSummeryIntermediate.class);
                 ArrayList<Long> reconciliationIds = new ArrayList<>();
                 dto.setBankReconciliationIds(reconciliationIds);
@@ -190,7 +185,8 @@ public class FetchDataService {
 
     public static void getAISuggestion(String companyId, String bankName,
                                        DatePicker startDatePickerBank, DatePicker endDatePickerBank,
-                                       DatePicker startDatePickerInvoice, DatePicker endDatePickerInvoice) {
+                                       DatePicker startDatePickerInvoice, DatePicker endDatePickerInvoice,
+                                       String hint) {
         if (startDatePickerBank.getValue() == null || endDatePickerBank.getValue() == null
                 || startDatePickerInvoice.getValue() == null || endDatePickerInvoice.getValue() == null) {
             Notification.show("Please select date range for invoices and bank statements");
