@@ -3,6 +3,7 @@ package com.xion.views2.list;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.vaadin.flow.component.ClientCallable;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Tag;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -16,12 +17,9 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 
-import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -37,20 +35,19 @@ import com.vaadin.flow.router.RouteAlias;
 import com.xion.data.BankStatementLineIntermediate;
 import com.xion.data.FetchDataService;
 import com.xion.data.InvoiceResultSummeryIntermediate;
-import org.apache.poi.ss.formula.functions.T;
 
-import java.beans.VetoableChangeListener;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @JavaScript("./bankGrid.js")
+@JavaScript("./voiceRecorder.js")
+@JavaScript("https://cdn.webrtc-experiment.com/RecordRTC.js")
 @PageTitle("Reconciliation")
 @Route(value = "")
 @RouteAlias(value = "")
@@ -69,6 +66,7 @@ public class MainView extends VerticalLayout {
     private List<BankStatementLineIntermediate> unreconciledBankData;
     private List<InvoiceResultSummeryIntermediate> invoiceData;
     private List<InvoiceResultSummeryIntermediate> unreconciledInvoiceData;
+    private ReconciliationDialogues reconciliationDialogues;
     private String companyId = "xion_ai_pte_ltd";
     private String bankName = "DBS SGD";
     FetchDataService fetchDataService;
@@ -80,7 +78,7 @@ public class MainView extends VerticalLayout {
         startDatePickerBank = new DatePicker("Start Date");
         endDatePickerBank = new DatePicker("End Date");
 
-        startDatePickerInvoice = new DatePicker("Start Date");
+        startDatePickerInvoice  = new DatePicker("Start Date");
         endDatePickerInvoice = new DatePicker("End Date");
 
         invoiceGrid = new Grid<>(InvoiceResultSummeryIntermediate.class);
@@ -330,20 +328,30 @@ public class MainView extends VerticalLayout {
         matchButton.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
         matchButton.setVisible(false);
 
-        Button splitButton = new Button("Split Amount", e -> openSplitAmountDialog());
+        Button splitButton = new Button("Split Amount", e ->
+                ReconciliationDialogues.openSplitAmountDialog(invoiceData, bankGrid, invoiceGrid));
         splitButton.setVisible(false);
 
-        Button createInvoiceButton = new Button("Create Invoice", e -> openCreateInvoiceDialog());
+        Button createAdjustmentsButton = new Button("Add Adjustment", e -> {
+            ReconciliationDialogues.openCreateAdjustmentsDialog(bankGrid, invoiceGrid);
+        });
+        createAdjustmentsButton.setVisible(false);
+
+
+        Button createInvoiceButton = new Button("Create Invoice", e ->
+                ReconciliationDialogues.openCreateInvoiceDialog(bankGrid, invoiceGrid));
         createInvoiceButton.setVisible(false);
 
-        Button aiSuggestion = new Button("AI Suggestion", e -> openAISuggestionDialog());
-        //FetchDataService.getAISuggestion(companyId, bankName,
-        //startDatePickerBank, endDatePickerBank, startDatePickerInvoice, endDatePickerInvoice))
+
+        Button aiSuggestion = new Button("AI Suggestion", e -> ReconciliationDialogues.openAISuggestionDialog(
+                companyId, bankName, startDatePickerBank, endDatePickerBank, startDatePickerInvoice, endDatePickerInvoice
+        ));
+
         aiSuggestion.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        invoiceGrid.addSelectionListener(event -> updateButtonVisibility(matchButton, splitButton, createInvoiceButton, aiSuggestion));
-        bankGrid.addSelectionListener(event -> updateButtonVisibility(matchButton, splitButton, createInvoiceButton, aiSuggestion));
-        VerticalLayout matchLayout = new VerticalLayout(matchButton, splitButton, createInvoiceButton, aiSuggestion);
+        invoiceGrid.addSelectionListener(event -> updateButtonVisibility(matchButton, splitButton, createInvoiceButton, aiSuggestion, createAdjustmentsButton));
+        bankGrid.addSelectionListener(event -> updateButtonVisibility(matchButton, splitButton, createInvoiceButton, aiSuggestion, createAdjustmentsButton));
+        VerticalLayout matchLayout = new VerticalLayout(matchButton, splitButton, createInvoiceButton, createAdjustmentsButton, aiSuggestion);
         matchLayout.setDefaultHorizontalComponentAlignment(Alignment.CENTER);
         matchLayout.setJustifyContentMode(JustifyContentMode.CENTER);
         matchLayout.setHeightFull();
@@ -351,26 +359,29 @@ public class MainView extends VerticalLayout {
         return matchLayout;
     }
 
-    private void updateButtonVisibility(Button matchButton, Button splitButton,
-                                        Button createInvoiceButton, Button aiSuggestion) {
+    private void updateButtonVisibility(Button matchButton, Button splitButton, Button createInvoiceButton,
+                                        Button aiSuggestion, Button createAdjustmentsButton) {
         Set<InvoiceResultSummeryIntermediate> selectedInvoices = invoiceGrid.getSelectedItems();
         Set<BankStatementLineIntermediate> selectedBankStatements = bankGrid.getSelectedItems();
+
 
         if (selectedInvoices.isEmpty() && selectedBankStatements.isEmpty()) {
             matchButton.setVisible(false);
             createInvoiceButton.setVisible(false);
             splitButton.setVisible(false);
             aiSuggestion.setVisible(true);
+            createAdjustmentsButton.setVisible(false);
             return;
-        } else if (!selectedBankStatements.isEmpty() && selectedInvoices.isEmpty()) {
-            createInvoiceButton.setVisible(true);
+        } else if (selectedInvoices.isEmpty() && !selectedBankStatements.isEmpty()) {
             matchButton.setVisible(false);
+            createInvoiceButton.setVisible(true);
             splitButton.setVisible(false);
+            createAdjustmentsButton.setVisible(false);
             return;
         }
 
+        double invoiceAmount = selectedInvoices.stream().mapToDouble(x -> x.getTotalAmount()).sum();
 
-        double invoiceAmount = selectedInvoices.stream().mapToDouble(InvoiceResultSummeryIntermediate::getTotalAmount).sum();
         double bankAmount = selectedBankStatements.stream()
                 .mapToDouble(bankStatement -> bankStatement.getCredit() + bankStatement.getDebit()).sum();
 
@@ -378,69 +389,26 @@ public class MainView extends VerticalLayout {
             matchButton.setVisible(true);
             splitButton.setVisible(false);
             createInvoiceButton.setVisible(false);
-        } else {
+            createAdjustmentsButton.setVisible(false);
+        } else if (invoiceAmount > bankAmount && selectedInvoices.size() == 1) {
             matchButton.setVisible(false);
             splitButton.setVisible(true);
             createInvoiceButton.setVisible(false);
+            createAdjustmentsButton.setVisible(true);
+        } else if (invoiceAmount != bankAmount && selectedBankStatements.size() == 1) {
+            matchButton.setVisible(false);
+            splitButton.setVisible(false);
+            createInvoiceButton.setVisible(false);
+            createAdjustmentsButton.setVisible(true);
+        } else {
+            matchButton.setVisible(false);
+            splitButton.setVisible(false);
+            createInvoiceButton.setVisible(false);
+            createAdjustmentsButton.setVisible(false);
         }
     }
 
-    private void openCreateInvoiceDialog() {
-        BankStatementLineIntermediate selectedBankStatement = null;
-        if (bankGrid.getSelectedItems().size() == 1) {
-            selectedBankStatement = bankGrid.getSelectedItems().stream().collect(Collectors.toList()).get(0);
-        }
-        Dialog dialog = new Dialog();
-        dialog.setCloseOnEsc(true);
-        dialog.setCloseOnOutsideClick(true);
 
-        TextField supplierNameField = new TextField("Supplier Name");
-        TextField customerField = new TextField("Customer Name");
-        NumberField totalAmountField = new NumberField("Total Amount");
-        TextField currencyField = new TextField("Currency");
-        DatePicker dateField = new DatePicker("Date");
-
-        if (selectedBankStatement != null) {
-            if (selectedBankStatement.getDebit() == 0) {
-                totalAmountField.setValue(selectedBankStatement.getCredit());
-            } else {
-                totalAmountField.setValue(selectedBankStatement.getDebit());
-            }
-
-            currencyField.setValue(selectedBankStatement.getCurrency());
-            dateField.setValue(selectedBankStatement.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
-        }
-
-        Button createButton = new Button("Create", event -> {
-            if (supplierNameField.getValue() == null || customerField.getValue() == null || dateField.getValue() == null
-                || totalAmountField.getValue() == null || currencyField.getValue() == null) {
-                Notification.show("Please fill in all fields").setPosition(Notification.Position.MIDDLE);
-                return;
-            }
-            InvoiceResultSummeryIntermediate newInvoice = new InvoiceResultSummeryIntermediate();
-            newInvoice.setSupplierName(supplierNameField.getValue());
-            LocalDate date = dateField.getValue();
-            newInvoice.setDate(Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant()));
-            newInvoice.setTotalAmount(totalAmountField.getValue());
-            newInvoice.setCurrency(currencyField.getValue());
-            if (this.invoiceData != null) {
-                this.invoiceData.add(newInvoice);
-                this.invoiceGrid.setItems(invoiceData);
-            }
-            List<Long> bankIds = new ArrayList<>();
-            for (BankStatementLineIntermediate bankStatement : bankGrid.getSelectedItems()) {
-                bankIds.add(bankStatement.getId());
-            }
-            newInvoice.setBankReconciliationIds(bankIds);
-
-            //add code to save to database
-            dialog.close();
-        });
-
-        VerticalLayout dialogLayout = new VerticalLayout(supplierNameField, customerField, totalAmountField, currencyField, dateField, createButton);
-        dialog.add(dialogLayout);
-        dialog.open();
-    }
 
     private void applyFiltersBank() {
         List<BankStatementLineIntermediate> filteredData = bankData;
@@ -546,113 +514,9 @@ public class MainView extends VerticalLayout {
         }
     }
 
-    private void openSplitAmountDialog() {
-        Dialog dialog = new Dialog();
-        dialog.setCloseOnEsc(true);
-        dialog.setCloseOnOutsideClick(true);
-
-        VerticalLayout dialogLayout = new VerticalLayout();
-        Set<BankStatementLineIntermediate> selectedBankStatements = bankGrid.getSelectedItems();
-        Set<InvoiceResultSummeryIntermediate> selectedInvoices = invoiceGrid.getSelectedItems();
-
-        double bankTotal = selectedBankStatements.stream()
-                .mapToDouble(bank -> bank.getCredit() + bank.getDebit()).sum();
-        double invoiceTotal = selectedInvoices.stream()
-                .mapToDouble(InvoiceResultSummeryIntermediate::getTotalAmount).sum();
-
-        NumberField bankAmountField = new NumberField("Bank Total Amount");
-        bankAmountField.setValue(bankTotal);
-        bankAmountField.setReadOnly(true);
-
-        NumberField invoiceAmountField = new NumberField("Invoice Total Amount");
-        invoiceAmountField.setValue(invoiceTotal);
-        invoiceAmountField.setReadOnly(true);
-
-        dialogLayout.add(new H2("Split Amounts"), bankAmountField, invoiceAmountField);
-
-        for (InvoiceResultSummeryIntermediate invoice : selectedInvoices) {
-            NumberField splitField = new NumberField("Invoice Amount for " + invoice.getSupplierName());
-            splitField.setValue(invoice.getTotalAmount());
-            dialogLayout.add(splitField);
-        }
-
-        Button splitButton = new Button("Confirm Split", e -> {
-            double totalSplitAmount = dialogLayout.getChildren()
-                    .filter(component -> component instanceof NumberField)
-                    .mapToDouble(component -> ((NumberField) component).getValue())
-                    .sum();
-
-            if (totalSplitAmount != bankTotal) {
-                Notification.show("Split amounts do not match bank total amount. Please adjust.");
-                return;
-            }
-
-            // Save split logic here...
-
-            dialog.close();
-        });
-
-        dialogLayout.add(splitButton);
-        dialog.add(dialogLayout);
-        dialog.open();
-    }
-
-    private void openAISuggestionDialog() {
-        Dialog dialog = new Dialog();
-        dialog.setCloseOnEsc(true);
-        dialog.setCloseOnOutsideClick(true);
-
-        VerticalLayout dialogLayout = new VerticalLayout();
-
-        TextArea hintTextArea = new TextArea("Hint");
-        hintTextArea.setPlaceholder("What should our AI look out for? \n \n \n \n \n");
-        hintTextArea.setWidthFull();
-
-        Button suggestButton = new Button("Get Suggestion", e -> {
-            String hint = hintTextArea.getValue();
-//            FetchDataService.getAISuggestion(companyId, bankName, startDatePickerBank,
-//                    endDatePickerBank, startDatePickerInvoice, endDatePickerInvoice, hint);
-            dialog.close();
-        });
-//        Icon icon = new Icon(VaadinIcon.MICROPHONE);
-//        VerticalLayout recordingLayout = new VerticalLayout();
-        Button voiceRecording = new Button ("", VaadinIcon.MICROPHONE.create());
-//        recordingLayout.add(voiceRecording);
-//        recordingLayout.setHorizontalComponentAlignment(Alignment.CENTER);
-
-        dialogLayout.add(new H2("AI Suggestion"), hintTextArea, voiceRecording, suggestButton);
-        dialogLayout.setHorizontalComponentAlignment(Alignment.CENTER, voiceRecording);
-        dialogLayout.setHorizontalComponentAlignment(Alignment.CENTER, suggestButton);
-
-        dialog.add(dialogLayout);
-        dialog.open();
-    }
 
 
-    public class AudioRecorderView extends VerticalLayout {
 
-        public AudioRecorderView() {
-            Button voiceRecordingButton = new Button("", VaadinIcon.MICROPHONE.create());
-            voiceRecordingButton.addClickListener(e -> {
-                getUI().ifPresent(ui -> ui.getPage().executeJs("startRecording();"));
-            });
-
-            Button stopRecordingButton = new Button("Stop Recording", VaadinIcon.STOP.create());
-            stopRecordingButton.addClickListener(e -> {
-                getUI().ifPresent(ui -> ui.getPage().executeJs("stopRecording();"));
-            });
-
-            add(voiceRecordingButton, stopRecordingButton);
-        }
-
-        @ClientCallable
-        public void serverSideCallback(String base64AudioMessage) {
-            // Handle the audio data (base64 string) here
-            byte[] audioBytes = java.util.Base64.getDecoder().decode(base64AudioMessage);
-            // You can now save the audioBytes to a file or process them as needed
-            System.out.println(audioBytes);
-        }
-    }
 
 
 

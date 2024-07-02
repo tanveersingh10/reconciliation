@@ -8,8 +8,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.notification.Notification;
-import com.xion.resultObjectModel.resultSummeries.InvoiceResultSummery;
-import com.xion.resultObjectModel.resultSummeries.bank.BankStatementLine;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -29,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class FetchDataService {
@@ -183,27 +182,31 @@ public class FetchDataService {
         return invoices;
     }
 
-    public static void getAISuggestion(String companyId, String bankName,
-                                       DatePicker startDatePickerBank, DatePicker endDatePickerBank,
-                                       DatePicker startDatePickerInvoice, DatePicker endDatePickerInvoice,
-                                       String hint) {
+    public static CompletableFuture<Void> getAISuggestion(String companyId, String bankName,
+                                                          DatePicker startDatePickerBank, DatePicker endDatePickerBank,
+                                                          DatePicker startDatePickerInvoice, DatePicker endDatePickerInvoice,
+                                                          String hint) {
+
         if (startDatePickerBank.getValue() == null || endDatePickerBank.getValue() == null
                 || startDatePickerInvoice.getValue() == null || endDatePickerInvoice.getValue() == null) {
-            Notification.show("Please select date range for invoices and bank statements");
-            return;
+            Notification.show("Please select date range for invoices and bank statements")
+                    .setPosition(Notification.Position.MIDDLE);
+            return null;
         }
 
         RestTemplate restTemplate = new RestTemplate();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        String baseUrl = "http://127.0.0.1:5000/predictMatches";
+        String baseUrl = "http://127.0.0.1:5000/run-session";
 
         Map<String, Object> jsonRequest = new HashMap<>();
         jsonRequest.put("companyId", companyId);
         jsonRequest.put("bankName", bankName);
-        jsonRequest.put("bankStart", startDatePickerBank.getValue().format(formatter).toString());
-        jsonRequest.put("bankEnd", endDatePickerBank.getValue().format(formatter).toString());
-        jsonRequest.put("invoiceStart", startDatePickerInvoice.getValue().format(formatter).toString());
-        jsonRequest.put("invoiceEnd", endDatePickerInvoice.getValue().format(formatter).toString());
+        jsonRequest.put("bankStartDate", startDatePickerBank.getValue().format(formatter).toString());
+        jsonRequest.put("bankEndDate", endDatePickerBank.getValue().format(formatter).toString());
+        jsonRequest.put("invoiceStartDate", startDatePickerInvoice.getValue().format(formatter).toString());
+        jsonRequest.put("invoiceEndDate", endDatePickerInvoice.getValue().format(formatter).toString());
+        jsonRequest.put("hint", hint);
+
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -211,5 +214,23 @@ public class FetchDataService {
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(jsonRequest, headers);
 
         ResponseEntity<String> response = restTemplate.exchange(baseUrl, HttpMethod.POST, entity, String.class);
+        System.out.println(response.getBody());
+        return null;
     }
+
+
+//    public static void getExchangeRateSGD() {
+//        String url = "https://open.er-api.com/v6/latest/SGD";
+//        RestTemplate restTemplate = new RestTemplate();
+//        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+//        System.out.println(response.getBody());
+//    }
+
+    public static String getCurrentHints() {
+        return "Hints: \n" +
+                "- All payments to Alex happened via bank transfer in bulk.\n" +
+                "- All payments to Daniel go out from Wise.";
+    }
+
+
 }

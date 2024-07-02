@@ -10,7 +10,7 @@ import javax.print.Doc;
 import java.util.Date;
 import java.util.List;
 
-public class InvoiceResultSummeryIntermediate {
+public class InvoiceResultSummeryIntermediate implements Cloneable {
     private DocumentType type;
     private String name;
     private Long universalDocumentId;
@@ -313,5 +313,14 @@ public class InvoiceResultSummeryIntermediate {
 
     public void setCurrency(String currency) {
         this.currency = currency;
+    }
+
+    @Override
+    public InvoiceResultSummeryIntermediate clone() {
+        try {
+            return (InvoiceResultSummeryIntermediate) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(); // Shouldn't happen
+        }
     }
 }
